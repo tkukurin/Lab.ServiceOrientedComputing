@@ -3,4 +3,4 @@ __pycache__
 mig_bck
 *.db
 venv
-
+djangorest/api/migrations
