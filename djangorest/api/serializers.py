@@ -1,11 +1,15 @@
 from rest_framework import serializers
-from .models import Bucketlist
+from .models import Tweet
 
-class BucketlistSerializer(serializers.ModelSerializer):
+class TweetSerializer(serializers.ModelSerializer):
   
   owner = serializers.ReadOnlyField(source='owner.username')
   
   class Meta:
-    model = Bucketlist
-    fields = ('id', 'name', 'owner', 'date_created', 'date_modified')
+    model = Tweet
+    fields = ('id', 
+              'content', 
+              'owner', 
+              'date_created', 
+              'date_modified')
     read_only_fields = ('date_created', 'date_modified')

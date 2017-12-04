@@ -4,17 +4,17 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.dispatch import receiver
 
-class Bucketlist(models.Model):
-  name = models.CharField(max_length=255, blank=False, unique=True)
+class Tweet(models.Model):
   owner = models.ForeignKey(
     'auth.User', 
-    related_name='bucketlists', 
     on_delete=models.CASCADE)
+  content = models.CharField(
+    max_length=240, blank=False, unique=False)
   date_created = models.DateTimeField(auto_now_add=True)
   date_modified = models.DateTimeField(auto_now=True)
   
   def __str__(self):
-    return self.name
+    return self.content
   
 @receiver(post_save, sender=User)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
