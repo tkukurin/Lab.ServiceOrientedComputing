@@ -4,3 +4,4 @@ mig_bck
 *.db
 venv
 djangorest/api/migrations
+*.sqlite3
