@@ -1,0 +1,9 @@
+# TODO add some initial data
+# https://docs.djangoproject.com/en/1.11/topics/testing/tools/#topics-testing-fixtures
+[{
+  "model": "",
+  "pk": 1,
+  "fields": {
+    "content": "This is my first test tweet."
+  }
+}]
