@@ -1,6 +1,5 @@
-from rest_framework import generics, permissions, views, mixins
+from rest_framework import generics, permissions, views
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 
 from .permissions import IsOwner, IsOwnerOrReadOnly
 from .serializers import TweetSerializer, UserSerializer
@@ -9,7 +8,7 @@ from .models import Tweet
 from django.contrib.auth.models import User
 
 
-class CreateView(generics.ListCreateAPIView):
+class TweetCreateView(generics.ListCreateAPIView):
   queryset = Tweet.objects.all()
   serializer_class = TweetSerializer
   permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
@@ -17,21 +16,12 @@ class CreateView(generics.ListCreateAPIView):
   def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
 
-class DetailsView(generics.RetrieveUpdateDestroyAPIView):
+class TweetDetailsView(generics.RetrieveUpdateDestroyAPIView):
   queryset = Tweet.objects.all()
   serializer_class = TweetSerializer
   permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
-
-class TweetCreate(generics.ListCreateAPIView):
-  queryset = Tweet.objects.all()
-  serializer_class = TweetSerializer
-  permission_classes = (permissions.IsAuthenticated, )
-  
-  def perform_create(self, serializer):
-    serializer.save(owner=self.request.user)
-
-class UserDetails(generics.ListCreateAPIView):
+class UserCreateView(generics.ListCreateAPIView):
   """
 	get:
 	Retrieves user data.
@@ -41,7 +31,11 @@ class UserDetails(generics.ListCreateAPIView):
   """
   queryset = User.objects.all()
   serializer_class = UserSerializer
-
+	
+class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
+  queryset = User.objects.all()
+  serializer_class = UserSerializer
+  permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 	
 class UserTweetsView(generics.RetrieveAPIView):
   """
