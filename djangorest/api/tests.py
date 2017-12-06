@@ -1,15 +1,19 @@
-from django.test import TestCase
-from django.test import Client
 from rest_framework.test import APIClient
-from django.core.urlresolvers import reverse
+
+from django.test import TestCase
 from django.contrib.auth.models import User
+
 from .models import Tweet
 from .serializers import TweetSerializer, UserSerializer
+
 
 class TweetTestCase(TestCase):
   def setUp(self):
     self.user = User.objects.create(username="toni", password="mypassword")
     self.tweet = Tweet.objects.create(owner=self.user, content="johnny greenwood")
+    
+    self.user2 = User.objects.create(username="not_toni", password="mypassword")
+    self.tweet2 = Tweet.objects.create(owner=self.user2, content="thom yorke")
   
   def test_tweet_get(self):
     client = APIClient()
@@ -23,13 +27,16 @@ class TweetTestCase(TestCase):
     response = client.get('/api/v1/tweets/')
     
     self.assertEqual(response.status_code, 200)
+    self.assertEqual(len(response.json()), 2)
     self.assertEqual(response.json()[0]['content'], 'johnny greenwood')
+    self.assertEqual(response.json()[1]['content'], 'thom yorke')
   
-  def test_tweet_user_list(self):
+  def test_tweet_list_for_user(self):
     client = APIClient()
     response = client.get('/api/v1/users/{0}/tweets/'.format(self.user.id))
     
     self.assertEqual(response.status_code, 200)
+    self.assertEqual(len(response.json()), 1)
     self.assertEqual(response.json()[0]['content'], 'johnny greenwood')
     
   def test_tweet_create(self):
@@ -74,7 +81,7 @@ class TweetTestCase(TestCase):
     response = client.post('/api/v1/tweets/', {'content': 'johnny greenwood'})
     id = response.json()['id']
     
-    client.force_authenticate(None)
+    client.force_authenticate(self.user2)
     response = client.put('/api/v1/tweets/{0}/'.format(response.json()['id']), 
                           {'content': 'johnny greenwood 2'})
     
@@ -98,17 +105,18 @@ class TweetTestCase(TestCase):
     client = APIClient()
     client.force_authenticate(self.user)
     response = client.post('/api/v1/tweets/', {'content': 'johnny greenwood'})
-    old_count = Tweet.objects.count()
+    count = Tweet.objects.count()
     
-    client.force_authenticate(None)
+    client.force_authenticate(self.user2)
     response = client.delete('/api/v1/tweets/{0}/'.format(response.json()['id']))
     
     self.assertEqual(response.status_code, 403)
-    self.assertEqual(Tweet.objects.count(), old_count)
+    self.assertEqual(Tweet.objects.count(), count)
 
 class UserTestCase(TestCase):
   def setUp(self):
     self.user = User.objects.create(username="toni", password="mypassword", email="myemail")
+    self.user2 = User.objects.create(username="not_toni", password="mypassword", email="myotheremail")
 
   def test_user_get(self):
     client = APIClient()
@@ -141,6 +149,8 @@ class UserTestCase(TestCase):
     
   def test_user_update_unauthenticated(self):
     client = APIClient()
+    
+    client.force_authenticate(self.user2)
     response = client.put('/api/v1/users/{0}/'.format(self.user.id),
                           {'username': 'john', 'password': 'smith'})
     
@@ -163,6 +173,7 @@ class UserTestCase(TestCase):
     old_count = User.objects.count()
     
     client = APIClient()
+    client.force_authenticate(self.user2)
     response = client.delete('/api/v1/users/{0}/'.format(self.user.id))
     
     self.assertEqual(response.status_code, 403)
