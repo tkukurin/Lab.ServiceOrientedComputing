@@ -26,17 +26,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['rznu-labos-tkukurin129769.codeanyapp.com']
 
-"""
-REST_FRAMEWORK = {
-  'DEFAULT_PERMISSIONS_CLASSES': ('rest_framework.permissions.IsAuthenticated'),
-  
-  # use both basic and token auth 
-  'DEFAULT_AUTHENTICATION_CLASSES': (
-    'rest_framework.authentication.BasicAuthentication', 
-    'rest_framework.authentication.TokenAuthentication',)
-}"""
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    #'rest_framework_swagger',
     'api',
     'rest_framework.authtoken',
 ]
