@@ -5,3 +5,4 @@ mig_bck
 venv
 djangorest/api/migrations
 *.sqlite3
+fixtures
