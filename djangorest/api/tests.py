@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from .models import Tweet
-from .serializers import TweetSerializer, UserSerializer
 
 
 class TweetTestCase(TestCase):
@@ -58,36 +57,35 @@ class TweetTestCase(TestCase):
     self.assertEqual(response.status_code, 403)
     self.assertEqual(Tweet.objects.count(), old_count)
     
-  def test_tweet_update(self):
-    old_count = Tweet.objects.count()
-    
+  def test_tweet_update(self):   
     client = APIClient()
     client.force_authenticate(self.user)
     response = client.post('/api/v1/tweets/', {'content': 'johnny greenwood'})
-    response = client.put('/api/v1/tweets/{0}/'.format(response.json()['id']), 
+    id = response.json()['id']
+    
+    old_count = Tweet.objects.count()
+    response = client.put('/api/v1/tweets/{0}/'.format(id), 
                           {'content': 'johnny greenwood 2'})
     
     self.assertEqual(response.status_code, 200)
-    self.assertEqual(Tweet.objects.count(), old_count + 1)
+    self.assertEqual(Tweet.objects.count(), old_count)
     self.assertEqual(
-      TweetSerializer(Tweet.objects.get(pk=response.json()['id'])).data['content'],
+      Tweet.objects.get(pk=id).content,
       'johnny greenwood 2')
     
   def test_tweet_update_unauthenticated(self):
-    old_count = Tweet.objects.count()
-    
     client = APIClient()
     client.force_authenticate(self.user)
     response = client.post('/api/v1/tweets/', {'content': 'johnny greenwood'})
     id = response.json()['id']
     
     client.force_authenticate(self.user2)
-    response = client.put('/api/v1/tweets/{0}/'.format(response.json()['id']), 
+    response = client.put('/api/v1/tweets/{0}/'.format(id), 
                           {'content': 'johnny greenwood 2'})
     
     self.assertEqual(response.status_code, 403)
     self.assertEqual(
-      TweetSerializer(Tweet.objects.get(pk=id)).data['content'],
+      Tweet.objects.get(pk=id).content,
       'johnny greenwood')
     
   def test_tweet_delete(self):
@@ -139,13 +137,18 @@ class UserTestCase(TestCase):
   def test_user_update(self):
     client = APIClient()
     client.force_authenticate(self.user)
+    
+    old_password = User.objects.get(pk=self.user.id).password
     response = client.put('/api/v1/users/{0}/'.format(self.user.id),
-                          {'username': 'john', 'password': 'smith'})
+                          {'username': 'johnny', 'password': 'smith'})
     
     self.assertEqual(response.status_code, 200)
+    self.assertNotEqual(
+      User.objects.get(pk=self.user.id).password,
+      old_password)
     self.assertEqual(
-      UserSerializer(User.objects.get(pk=self.user.id)).data['username'],
-      'john')
+      User.objects.get(pk=self.user.id).username,
+      'johnny')
     
   def test_user_update_unauthenticated(self):
     client = APIClient()
@@ -156,7 +159,7 @@ class UserTestCase(TestCase):
     
     self.assertEqual(response.status_code, 403)
     self.assertEqual(
-      UserSerializer(User.objects.get(pk=self.user.id)).data['username'],
+      User.objects.get(pk=self.user.id).username,
       self.user.username)
     
   def test_user_delete(self):
