@@ -1,3 +1,26 @@
-<h1>
-  Welcome!
-</h1>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+    {% load staticfiles %}
+    <title>TwitChat: {{ room.label }}</title>
+    <link href='{% static "style.css" %}' rel="stylesheet" />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script src='{% static "twitchat.js" %}'></script>
+</head>
+<body>
+  <div id="container">
+    <h1>
+      TwitChat
+    </h1>
+    <form id="chatform">
+      <textarea id="message"></textarea>
+      <input id="submit-message" type="submit" value="Send message">
+    </form>
+    <div id="chat-messages">
+      
+    </div>
+  </div>
+</body>
