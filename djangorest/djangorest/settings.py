@@ -109,6 +109,38 @@ CHANNEL_LAYERS = {
     },
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+        },
+        'console': {
+              'level': 'DEBUG',
+              'class': 'logging.StreamHandler',
+              'formatter': 'simple'
+          },
+    },
+    'loggers': {
+      'websockets': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+       },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
