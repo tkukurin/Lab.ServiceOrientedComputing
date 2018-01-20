@@ -36,8 +36,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'api',
     'rest_framework.authtoken',
+    'channels',
+    'api',
+    'websockets',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +57,7 @@ ROOT_URLCONF = 'djangorest.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,6 +102,45 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "ROUTING": "websockets.routing.channel_routing",
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+        },
+        'console': {
+              'level': 'DEBUG',
+              'class': 'logging.StreamHandler',
+              'formatter': 'simple'
+          },
+    },
+    'loggers': {
+      'websockets': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+       },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -119,3 +160,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+LOGIN_URL='/login'
+LOGIN_REDIRECT_URL='/'
