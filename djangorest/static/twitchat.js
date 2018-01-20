@@ -1,8 +1,7 @@
 $(function() {
   const supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
   if (!supportsWebSockets) {
-    $("body").innerHTML = "Sorry, your browser does not support WebSockets." + 
-      "Keep up with the times.";
+    $("body").html("Sorry, your browser does not support WebSockets. Keep up with the times.");
     return;
   }
 
@@ -21,6 +20,8 @@ $(function() {
     messageEl.innerHTML = data.username + " says " + data.message;
     messagesDiv.append(messageEl);
   };
+  
+  socket.onerror = error => console.log(error);
 
   $("#chatform").on("submit", event => {
     const message = $('#message').val();
